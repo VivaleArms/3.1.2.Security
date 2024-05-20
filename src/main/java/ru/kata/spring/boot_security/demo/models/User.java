@@ -48,6 +48,8 @@ public class User implements UserDetails {
         return role;
     }
 
+
+
     public void setRole(Set<Role> role) {
         this.role = role;
     }

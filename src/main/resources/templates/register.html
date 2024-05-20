@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"
-xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Sign Up</title>
@@ -10,11 +10,31 @@ xmlns:th="http://www.thymeleaf.org">
 <p th:if="${param.error}" class="error">Registration Failed</p>
 
 <form th:action="@{/register}" method="post" th:object="${user}">
-    <label for="email">E-mail</label>
-    <input type="text" id="email" th:field="*{email}"/>
+    <label for="name">Name:</label>
+    <input type="text" id="name" th:field="*{username}"/>
+    <br/>
+    <label for="password">Password:</label>
+    <input type="password" id="password" th:field="*{password}">
     <br/>
 
+    <label for="roles">Select role:
+        <input type="checkbox" id="roles"
+               th:each="role: ${role}"
+               th:value="${role.getId()}"
+               th:text="${role.getName()}"
+               th:field="*{role}"/>
+
+    </label>
+
+
+    <br/>
+    <input type="submit" value="Sign Up">
+    <br/>
 </form>
+
+<p>Already have an account?
+    <a th:href="@{/login}">Login</a>
+</p>
 
 </body>
 </html>

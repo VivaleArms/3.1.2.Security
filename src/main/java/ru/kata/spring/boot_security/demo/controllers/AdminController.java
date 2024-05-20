@@ -5,22 +5,22 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.kata.spring.boot_security.demo.services.UserService;
+import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public AdminController(UserService userService) {
-        this.userService = userService;
+    public AdminController(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
 
     @GetMapping
     public String showAllUsers(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("users", userRepository.findAll());
         return "/all_users";
     }
 }

@@ -44,7 +44,7 @@ public class WebSecurityConfig {
                         .clearAuthentication(true)
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-                        .logoutSuccessUrl("login")
+                        .logoutSuccessUrl("/login")
                         .permitAll())
                 .authenticationProvider(daoAuthenticationProvider());
         return httpSecurity.build();

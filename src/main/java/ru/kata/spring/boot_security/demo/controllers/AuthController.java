@@ -1,7 +1,6 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,37 +10,49 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import ru.kata.spring.boot_security.demo.models.User;
-import ru.kata.spring.boot_security.demo.services.UserService;
-import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
+import ru.kata.spring.boot_security.demo.repositories.UserRepository;
+import ru.kata.spring.boot_security.demo.services.RoleServiceImpl;
 
 @Controller
 public class AuthController {
-    private final UserServiceImpl userService;
+
     private final DaoAuthenticationProvider daoAuthenticationProvider;
 
+    private final UserRepository userRepository;
+    private final RoleServiceImpl roleService;
+
     @Autowired
-    public AuthController(UserServiceImpl userService, DaoAuthenticationProvider daoAuthenticationProvider) {
-        this.userService = userService;
+    public AuthController(DaoAuthenticationProvider daoAuthenticationProvider, UserRepository userRepository, RoleServiceImpl roleService) {
         this.daoAuthenticationProvider = daoAuthenticationProvider;
+        this.userRepository = userRepository;
+        this.roleService = roleService;
     }
 
+
     @GetMapping("/register")
+    public String register(Model model) {
+        model.addAttribute("user", new User());
+        model.addAttribute("role",
+                roleService.getAllRoles()
+        );
+        return "register";
+    }
+
+    @PostMapping("/register")
     public String createUser(HttpServletRequest httpServletRequest,
-                             HttpServletResponse httpServletResponse,
-                             @ModelAttribute("user")User user) {
+                             @ModelAttribute("user") User user) {
         try {
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                    user.getEmail(),
+                    user.getName(),
                     user.getPassword()
             );
-            user = userService.createUser(user);
+            user = userRepository.save(user);
 
-            if (user == null) {
-                return "redirect:/register?error";
-            }
             Authentication authentication = daoAuthenticationProvider.authenticate(token);
             SecurityContext securityContext = SecurityContextHolder.getContext();
             securityContext.setAuthentication(authentication);
@@ -51,7 +62,7 @@ public class AuthController {
                     securityContext
             );
             return "redirect:/user";
-        } catch (Exception e){
+        } catch (Exception e) {
             return "redirect:/register?error";
         }
     }
