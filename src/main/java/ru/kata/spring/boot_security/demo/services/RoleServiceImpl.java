@@ -6,8 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 
 @Service
 public class RoleServiceImpl implements RoleService{
@@ -20,7 +19,7 @@ public class RoleServiceImpl implements RoleService{
 
     @Transactional(readOnly = true)
     @Override
-    public Set<Role> getAllRoles() {
-        return new HashSet<>(roleRepository.findAll());
+    public Collection<Role> getAllRoles() {
+        return roleRepository.findAll();
     }
 }

@@ -1,13 +1,11 @@
 package ru.kata.spring.boot_security.demo.models;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 
 @Entity
@@ -17,7 +15,7 @@ public class User implements UserDetails {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, max = 30, message = "Name should be between 2 and 30 characters")
@@ -34,6 +32,7 @@ public class User implements UserDetails {
     private String email;
 
     @Column(name = "password")
+    @NotBlank(message = "Password is required field")
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -42,15 +41,13 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
-    private Set<Role> role = new HashSet<>();
+    private Collection<Role> role;
 
-    public Set<Role> getRole() {
+    public Collection<Role> getRole() {
         return role;
     }
 
-
-
-    public void setRole(Set<Role> role) {
+    public void setRole(Collection<Role> role) {
         this.role = role;
     }
 
@@ -64,11 +61,11 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -98,7 +95,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role;
+        return getRole();
     }
 
     public String getPassword() {

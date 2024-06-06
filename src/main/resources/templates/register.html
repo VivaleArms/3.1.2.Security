@@ -1,40 +1,56 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Sign Up</title>
+    <title>User</title>
 </head>
 <body>
-<h1>Sign Up</h1>
-<p th:if="${param.error}" class="error">Registration Failed</p>
 
-<form th:action="@{/register}" method="post" th:object="${user}">
-    <label for="name">Name:</label>
-    <input type="text" id="name" th:field="*{username}"/>
-    <br/>
-    <label for="password">Password:</label>
-    <input type="password" id="password" th:field="*{password}">
-    <br/>
-
-    <label for="roles">Select role:
-        <input type="checkbox" id="roles"
-               th:each="role: ${role}"
-               th:value="${role.getId()}"
-               th:text="${role.getName()}"
-               th:field="*{role}"/>
-
-    </label>
-
-
-    <br/>
-    <input type="submit" value="Sign Up">
-    <br/>
+<h2>User</h2>
+<br>
+<form th:action="@{/logout}" th:method="POST">
+    <input type="submit" th:value="Logout"/>
 </form>
-
-<p>Already have an account?
-    <a th:href="@{/login}">Login</a>
-</p>
+<br>
+<form th:method="POST" th:action="@{/admin/addUser}" th:object="${user}">
+    <input type="hidden" th:field="*{id}" id="id">
+    <label for="username">Enter username: </label>
+    <input type="text" th:field="*{username}" id="username"/>
+    <ul>
+        <li th:each="err : ${#fields.errors('username')}"
+            th:text="${err}" class="error" style="color: red"/>
+    </ul>
+    <br><br>
+    <label for="password">Enter password: </label>
+    <input type="text" th:field="*{password}" id="password"/>
+    <ul>
+        <li th:each="err : ${#fields.errors('password')}"
+            th:text="${err}" class="error" style="color: red"/>
+    </ul>
+    <br><br>
+    <label for="name">Enter name: </label>
+    <input type="text" th:field="*{name}" id="name"/>
+    <ul>
+        <li th:each="err : ${#fields.errors('name')}"
+            th:text="${err}" class="error" style="color: red"/>
+    </ul>
+    <br><br>
+    <label for="lastname">Enter E-mail: </label>
+    <input type="text" th:field="*{email}" id="lastname"/>
+    <ul>
+        <li th:each="err : ${#fields.errors('lastname')}"
+            th:text="${err}" class="error" style="color: red"/>
+    </ul>
+    <br><br>
+    <label for="age">Enter age: </label>
+    <input type="text" th:field="*{age}" id="age"/>
+    <ul>
+        <li th:each="err : ${#fields.errors('age')}"
+            th:text="${err}" class="error" style="color: red"/>
+    </ul>
+    <br><br>
+    <input type="submit" value="OK"/>
+</form>
 
 </body>
 </html>
