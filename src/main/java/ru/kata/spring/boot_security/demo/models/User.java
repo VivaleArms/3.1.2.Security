@@ -1,110 +1,69 @@
 package ru.kata.spring.boot_security.demo.models;
 
+import lombok.Data;
+import org.hibernate.annotations.Cascade;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Entity
+@Data
 @Table(name = "users")
 public class User implements UserDetails {
 
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "Name should not be empty")
-    @Size(min = 2, max = 30, message = "Name should be between 2 and 30 characters")
-    @Column(name = "name")
-    private String name;
+    @NotEmpty(message = "Имя не может быть пустым")
+    @Size(min = 2, max = 10, message = "Имя в пределах от 2 до 10 знаков")
+    @Pattern(regexp = "^[\\p{L}]+(?: [\\p{L}]+)*$", message = "Имя может содержать только буквы и пробелы")
+    @Column(name = "username")
+    private String username;
 
-    @Min(value = 0, message = "Age should be greater than 0")
-    @Column(name = "age")
-    private Integer age;
+    @NotEmpty(message = "Фамилия не может быть пустой")
+    @Size(min = 2, max = 15, message = "Фамилия в пределах от 2 до 15 знаков")
+    @Pattern(regexp = "^[\\p{L}]+(?: [\\p{L}]+)*$", message = "Фамилия может содержать только буквы и пробелы")
+    @Column(name = "last_name")
+    private String lastname;
 
-    @NotEmpty(message = "Email should not be empty")
-    @Email(message = "Email should be valid")
+    @NotEmpty(message = "Почта не может быть пустой")
+    @Email(message = "Почта должна быть валидная")
     @Column(name = "email")
     private String email;
 
-    @Column(name = "password")
-    @NotBlank(message = "Password is required field")
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "user_role",
+    @ManyToMany
+    @Cascade(org.hibernate.annotations.CascadeType.PERSIST)
+    @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
-    )
-    private Collection<Role> role;
-
-    public Collection<Role> getRole() {
-        return role;
-    }
-
-    public void setRole(Collection<Role> role) {
-        this.role = role;
-    }
-
-    public User() {
-    }
-
-    public User(String name, Integer age, String email, String password) {
-        this.name = name;
-        this.age = age;
-        this.email = email;
-        this.password = password;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private Set <Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRole();
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getAuthority())).collect(Collectors.toList());
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
 
     @Override
     public String getUsername() {
-        return name;
+        return username;
     }
 
     @Override
@@ -125,19 +84,5 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               ", age=" + age +
-               ", email='" + email + '\'' +
-               '}';
     }
 }
