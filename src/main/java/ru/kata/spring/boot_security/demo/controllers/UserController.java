@@ -1,13 +1,13 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.UserServiceConfig;
 
 import java.security.Principal;
 
-@RestController
+@Controller
 public class UserController {
 
     private final UserServiceConfig userServiceConfig;
